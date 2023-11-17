@@ -2,12 +2,13 @@ plugins {
     `java-library`
     signing
     `maven-publish`
+    //application
 }
 
-data class ProjPublication(
+data class PublicationRepo(
     val name: String,
-    val usernameFrom: String,
-    val passwordFrom: String,
+    val usernameFrom: List<String>,
+    val passwordFrom: List<String>,
     val snapshotRepo: String,
     val releaseRepo: String,
     val snapshotPredicate: (String) -> Boolean = { it.endsWith("-SNAPSHOT") }
@@ -15,13 +16,23 @@ data class ProjPublication(
 
 val hasPublication: String by rootProject
 val publicationSigning: String by rootProject
-val publication: ProjPublication? = if (hasPublication.toBoolean()) ProjPublication(
+val publicationRepo: PublicationRepo? = if (hasPublication.toBoolean()) PublicationRepo(
     name = "OSSRH",
-    usernameFrom = "OSSRH_USERNAME",
-    passwordFrom = "OSSRH_PASSWORD",
+    usernameFrom = listOf("OSSRH_USERNAME", "ossrhUsername"),
+    passwordFrom = listOf("OSSRH_PASSWORD", "ossrhPassword"),
     snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/",
     releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
 ) else null
+
+data class Developer(
+    val id: String,
+    val name: String? = null,
+    val email: String? = null
+)
+
+val projDevelopers = arrayOf(
+    Developer("example")
+)
 
 val hasJavadocJar: String by rootProject
 val hasSourcesJar: String by rootProject
@@ -53,11 +64,11 @@ version = projVersion
 repositories {
     mavenCentral()
     // snapshot repositories
-    // maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
-    // maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
+    //maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    //maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
 
-    // maven { url = uri("https://oss.oss.sonatype.org/content/repositories/releases") }
-    // maven { url = uri("https://s01.oss.sonatype.org/content/repositories/releases") }
+    //maven { url = uri("https://oss.oss.sonatype.org/content/repositories/releases") }
+    //maven { url = uri("https://s01.oss.sonatype.org/content/repositories/releases") }
 }
 
 dependencies {
@@ -103,6 +114,11 @@ tasks.withType<Javadoc> {
     }
 }
 
+//application {
+//    applicationName = projName
+//    mainClass = "org.example.Main"
+//}
+
 tasks.named<Jar>("jar") {
     manifestContentCharset = "utf-8"
     setMetadataCharset("utf-8")
@@ -113,6 +129,7 @@ tasks.named<Jar>("jar") {
         "Implementation-Title" to projName,
         "Implementation-Vendor" to orgName,
         "Implementation-Version" to projVersion
+        //"Main-Class" to "org.example.Main"
     )
 }
 
@@ -138,7 +155,7 @@ tasks.withType<Jar> {
     from(projLicenseFileName).rename { "${projLicenseFileName}_$projArtifactId" }
 }
 
-if (hasPublication.toBoolean() && publication != null) {
+if (hasPublication.toBoolean() && publicationRepo != null) {
     publishing.publications {
         register<MavenPublication>("mavenJava") {
             groupId = projGroupId
@@ -160,6 +177,15 @@ if (hasPublication.toBoolean() && publication != null) {
                     name = orgName
                     url = orgUrl
                 }
+                developers {
+                    projDevelopers.forEach {
+                        developer {
+                            id = it.id
+                            it.name?.also { name = it }
+                            it.email?.also { email = it }
+                        }
+                    }
+                }
                 scm {
                     projScmConnection?.also {
                         connection = it
@@ -173,20 +199,20 @@ if (hasPublication.toBoolean() && publication != null) {
 
     publishing.repositories {
         maven {
-            name = publication.name
+            name = publicationRepo.name
             credentials {
-                username = rootProject.findProperty(publication.usernameFrom).toString()
-                password = rootProject.findProperty(publication.passwordFrom).toString()
+                username = publicationRepo.usernameFrom.firstNotNullOf { rootProject.findProperty(it) }.toString()
+                password = publicationRepo.passwordFrom.firstNotNullOf { rootProject.findProperty(it) }.toString()
             }
             url = uri(
-                if (publication.snapshotPredicate(projVersion)) publication.snapshotRepo
-                else publication.releaseRepo
+                if (publicationRepo.snapshotPredicate(projVersion)) publicationRepo.snapshotRepo
+                else publicationRepo.releaseRepo
             )
         }
     }
 
     signing {
-        if (!publication.snapshotPredicate(projVersion) && publicationSigning.toBoolean()) {
+        if (!publicationRepo.snapshotPredicate(projVersion) && publicationSigning.toBoolean()) {
             sign(publishing.publications["mavenJava"])
         }
     }
