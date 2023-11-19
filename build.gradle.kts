@@ -24,10 +24,20 @@ val publicationRepo: PublicationRepo? = if (hasPublication.toBoolean()) Publicat
     releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
 ) else null
 
+data class Organization(
+    val name: String,
+    val url: String
+)
+
 data class Developer(
     val id: String,
     val name: String? = null,
-    val email: String? = null
+    val email: String? = null,
+    val url: String? = null,
+    val organization: Organization? = projOrg,
+    val roles: Set<String>? = null,
+    val timezone: String? = null,
+    val properties: Map<String, String?>? = null
 )
 
 val projDevelopers = arrayOf(
@@ -51,6 +61,7 @@ val projLicenseFileName: String by rootProject
 
 val orgName: String by rootProject
 val orgUrl: String by rootProject
+val projOrg = Organization(orgName, orgUrl)
 
 val jdkVersion: String by rootProject
 val jdkEnablePreview: String by rootProject
@@ -124,10 +135,10 @@ tasks.named<Jar>("jar") {
     setMetadataCharset("utf-8")
     manifest.attributes(
         "Specification-Title" to projName,
-        "Specification-Vendor" to orgName,
+        "Specification-Vendor" to projOrg.name,
         "Specification-Version" to projVersion,
         "Implementation-Title" to projName,
-        "Implementation-Vendor" to orgName,
+        "Implementation-Vendor" to projOrg.name,
         "Implementation-Version" to projVersion
         //"Main-Class" to "org.example.Main"
     )
@@ -174,8 +185,8 @@ if (hasPublication.toBoolean() && publicationRepo != null) {
                     }
                 }
                 organization {
-                    name = orgName
-                    url = orgUrl
+                    name = projOrg.name
+                    url = projOrg.url
                 }
                 developers {
                     projDevelopers.forEach {
@@ -183,6 +194,14 @@ if (hasPublication.toBoolean() && publicationRepo != null) {
                             id = it.id
                             it.name?.also { name = it }
                             it.email?.also { email = it }
+                            it.url?.also { url = it }
+                            it.organization?.also {
+                                organization = it.name
+                                organizationUrl = it.url
+                            }
+                            it.roles?.also { roles = it }
+                            it.timezone?.also { timezone = it }
+                            it.properties?.also { properties = it }
                         }
                     }
                 }
