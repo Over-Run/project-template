@@ -117,9 +117,13 @@ tasks.withType<Javadoc> {
             charSet = "UTF-8"
             isAuthor = true
             if (jdkEarlyAccessDoc == null) {
-                links("https://docs.oracle.com/en/java/javase/$targetJavaVersion/docs/api/")
+                links("https://docs.oracle.com/en/java/javase/$jdkVersion/docs/api/")
             } else {
                 links("https://download.java.net/java/early_access/$jdkEarlyAccessDoc/docs/api/")
+            }
+            if (jdkEnablePreview.toBoolean()) {
+                addBooleanOption("-enable-preview", true)
+                addStringOption("source", jdkVersion)
             }
         }
     }
