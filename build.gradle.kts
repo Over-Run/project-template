@@ -163,7 +163,7 @@ if (hasJavadocJar.toBoolean()) {
 
 tasks.withType<Jar> {
     archiveBaseName = projArtifactId
-    from(projLicenseFileName).rename { "${projLicenseFileName}_$projArtifactId" }
+    from(rootProject.file(projLicenseFileName)).rename(projLicenseFileName, "${projLicenseFileName}_$projArtifactId")
 }
 
 if (hasPublication.toBoolean() && publicationRepo != null) {
