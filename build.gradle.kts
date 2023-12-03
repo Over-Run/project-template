@@ -224,8 +224,8 @@ if (hasPublication.toBoolean() && publicationRepo != null) {
         maven {
             name = publicationRepo.name
             credentials {
-                username = publicationRepo.usernameFrom.firstNotNullOf { rootProject.findProperty(it) }.toString()
-                password = publicationRepo.passwordFrom.firstNotNullOf { rootProject.findProperty(it) }.toString()
+                username = publicationRepo.usernameFrom.firstNotNullOfOrNull { rootProject.findProperty(it) }.toString()
+                password = publicationRepo.passwordFrom.firstNotNullOfOrNull { rootProject.findProperty(it) }.toString()
             }
             url = uri(
                 if (publicationRepo.snapshotPredicate(projVersion)) publicationRepo.snapshotRepo
