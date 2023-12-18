@@ -5,45 +5,6 @@ plugins {
     //application
 }
 
-data class PublicationRepo(
-    val name: String,
-    val usernameFrom: List<String>,
-    val passwordFrom: List<String>,
-    val snapshotRepo: String,
-    val releaseRepo: String,
-    val snapshotPredicate: (String) -> Boolean = { it.endsWith("-SNAPSHOT") }
-)
-
-val hasPublication: String by rootProject
-val publicationSigning: String by rootProject
-val publicationRepo: PublicationRepo? = if (hasPublication.toBoolean()) PublicationRepo(
-    name = "OSSRH",
-    usernameFrom = listOf("OSSRH_USERNAME", "ossrhUsername"),
-    passwordFrom = listOf("OSSRH_PASSWORD", "ossrhPassword"),
-    snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/",
-    releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-) else null
-
-data class Organization(
-    val name: String,
-    val url: String
-)
-
-data class Developer(
-    val id: String,
-    val name: String? = null,
-    val email: String? = null,
-    val url: String? = null,
-    val organization: Organization? = projOrg,
-    val roles: Set<String>? = null,
-    val timezone: String? = null,
-    val properties: Map<String, String?>? = null
-)
-
-val projDevelopers = arrayOf(
-    Developer("example")
-)
-
 val hasJavadocJar: String by rootProject
 val hasSourcesJar: String by rootProject
 
@@ -68,6 +29,45 @@ val jdkEnablePreview: String by rootProject
 val jdkEarlyAccessDoc: String? by rootProject
 
 val targetJavaVersion = jdkVersion.toInt()
+
+val projDevelopers = arrayOf(
+    Developer("example")
+)
+
+data class Organization(
+    val name: String,
+    val url: String
+)
+
+data class Developer(
+    val id: String,
+    val name: String? = null,
+    val email: String? = null,
+    val url: String? = null,
+    val organization: Organization? = projOrg,
+    val roles: Set<String>? = null,
+    val timezone: String? = null,
+    val properties: Map<String, String?>? = null
+)
+
+data class PublicationRepo(
+    val name: String,
+    val usernameFrom: List<String>,
+    val passwordFrom: List<String>,
+    val snapshotRepo: String,
+    val releaseRepo: String,
+    val snapshotPredicate: (String) -> Boolean = { it.endsWith("-SNAPSHOT") }
+)
+
+val hasPublication: String by rootProject
+val publicationSigning: String by rootProject
+val publicationRepo: PublicationRepo? = if (hasPublication.toBoolean()) PublicationRepo(
+    name = "OSSRH",
+    usernameFrom = listOf("OSSRH_USERNAME", "ossrhUsername"),
+    passwordFrom = listOf("OSSRH_PASSWORD", "ossrhPassword"),
+    snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/",
+    releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+) else null
 
 group = projGroupId
 version = projVersion
