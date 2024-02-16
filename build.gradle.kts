@@ -75,11 +75,11 @@ version = projVersion
 repositories {
     mavenCentral()
     // snapshot repositories
-    //maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
-    //maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
+    //maven("https://s01.oss.sonatype.org/content/repositories/snapshots")
+    //maven("https://oss.sonatype.org/content/repositories/snapshots")
 
-    //maven { url = uri("https://oss.oss.sonatype.org/content/repositories/releases") }
-    //maven { url = uri("https://s01.oss.sonatype.org/content/repositories/releases") }
+    //maven("https://s01.oss.sonatype.org/content/repositories/releases")
+    //maven("https://oss.oss.sonatype.org/content/repositories/releases")
 }
 
 dependencies {
