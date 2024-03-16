@@ -1,3 +1,5 @@
+// last updated: 2024/3/16
+
 plugins {
     `java-library`
     signing
