@@ -1,4 +1,4 @@
-// last updated: 2024/6/10
+// last updated: 2024/7/21
 
 plugins {
     `java-library`
@@ -226,8 +226,8 @@ if (hasPublication.toBoolean() && publicationRepo != null) {
         maven {
             name = publicationRepo.name
             credentials {
-                username = publicationRepo.usernameFrom.firstNotNullOfOrNull { rootProject.findProperty(it) }.toString()
-                password = publicationRepo.passwordFrom.firstNotNullOfOrNull { rootProject.findProperty(it) }.toString()
+                username = publicationRepo.usernameFrom.firstNotNullOfOrNull(rootProject::findProperty).toString()
+                password = publicationRepo.passwordFrom.firstNotNullOfOrNull(rootProject::findProperty).toString()
             }
             url = uri(
                 if (publicationRepo.snapshotPredicate(projVersion)) publicationRepo.snapshotRepo
