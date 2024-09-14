@@ -1,4 +1,4 @@
-// last updated: 2024/7/21
+// last updated: 2024/9/14
 
 plugins {
     `java-library`
@@ -169,7 +169,9 @@ if (hasJavadocJar.toBoolean()) {
 
 tasks.withType<Jar> {
     archiveBaseName = projArtifactId
-    from(rootProject.file(projLicenseFileName)).rename(projLicenseFileName, "${projLicenseFileName}_$projArtifactId")
+    from(rootProject.file(projLicenseFileName)) {
+        rename(projLicenseFileName, "${projLicenseFileName}_$projArtifactId")
+    }
 }
 
 if (hasPublication.toBoolean() && publicationRepo != null) {
