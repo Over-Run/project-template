@@ -1,10 +1,9 @@
-// last updated: 2024/9/14
+// last updated: 2025/3/8
 
 plugins {
     `java-library`
     signing
     `maven-publish`
-    //application
 }
 
 val hasJavadocJar: String by rootProject
